@@ -6,6 +6,8 @@ Entity framework uses SqLite provider. In order to migrate:
 - update-database
 - You can open db via https://sqlitebrowser.org/
 
+Open sln with VS2022
+
 Employee and Manager task is  in BlazorApp.Server -> Misc/Misc.cs
 
 Overall Blazor seemed convenient overall, frontent development speed is signifigantly faster than i am used to.
