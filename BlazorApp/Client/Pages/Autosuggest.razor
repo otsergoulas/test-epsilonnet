@@ -1,0 +1,57 @@
+﻿@page "/autosuggest"
+@using Microsoft.Extensions.Configuration
+@using BlazorApp.Shared;
+@inject HttpClient Http
+@inject IConfiguration Configuration
+
+<h3>Autosuggest</h3>
+
+<PageTitle>Autosuggest</PageTitle>
+
+<div class="input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text" id="">Search Term</span>
+    </div>
+    <input type="text" @bind="searchText" class="form-control" />
+    
+    <button @onclick="Search">Search</button>
+</div>
+
+
+@if (suggestions.Any())
+{
+    <ul class="list-group">
+        @foreach (var suggestion in suggestions)
+        {
+            <li class="list-group-item">@suggestion</li>
+        }
+    </ul>
+}
+
+@code {
+    private string searchText;
+    private List<string> suggestions = new List<string>();
+    private BingConfig? config;
+
+    protected override void OnInitialized()
+    {
+        config = Configuration.GetSection("BingConfig").Get<BingConfig>();
+    }
+    
+    private async Task Search()
+    {
+        var endpoint = $"{config.Endpoint}?query={searchText}&maxResults=5&includeEntityTypes=Business&key={config.ApiKey}";
+
+        var result = await Http.GetFromJsonAsync<BingAutoCompleteObject>(endpoint);
+
+        if (result!.ResourceSets.Length > 0 && result.ResourceSets.FirstOrDefault()!.Resources.Length > 0)
+        {
+            suggestions = result.ResourceSets[0].Resources.SelectMany(x=>x.Value).Select(x=>x.Name).ToList();
+        }
+        else
+        {
+            suggestions = new List<string>();
+        }
+    }
+
+}

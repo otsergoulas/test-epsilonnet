@@ -1,0 +1,27 @@
+﻿@page "/customers/create"
+@using BlazorApp.Shared.Entities
+@inject HttpClient Http
+@inject NavigationManager UriHelper
+@inject IJSRuntime JsRuntime
+
+<h3>Create Customer</h3>
+
+<CustomerForm Customer="@_customer" OnValidSubmit="@CreateCustomer" />
+
+@code {
+    Customer _customer = new Customer();
+    async Task CreateCustomer()
+    {
+        var httpResponse = await Http.PostAsJsonAsync("api/customers", _customer);
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Something went wrong!");
+            UriHelper.NavigateTo("customers/create");
+        }
+        else
+        {
+            UriHelper.NavigateTo("customers");
+        }
+    }
+}

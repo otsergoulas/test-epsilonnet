@@ -1,0 +1,30 @@
+﻿@page "/customers/edit/{customerId}"
+@using BlazorApp.Shared.Entities
+@inject HttpClient Http
+@inject NavigationManager UriHelper
+@inject IJSRuntime JsRuntime
+
+<h3>Edit Customer</h3>
+
+<CustomerForm Customer="_customer" OnValidSubmit="@EditPerson" />
+
+@code {
+    [Parameter] public string customerId { get; set; }
+    Customer? _customer = new Customer();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _customer = await Http.GetFromJsonAsync<Customer>($"api/customers/{customerId}");
+    }
+
+    async Task EditPerson(){
+        var httpResponse = await Http.PutAsJsonAsync("api/customers", _customer);
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Something went wrong!");
+        }
+
+        UriHelper.NavigateTo("customers");
+    }
+}

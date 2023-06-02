@@ -1,0 +1,88 @@
+﻿@page "/customers"
+@using System.Text.Json
+@using BlazorApp.Shared.Entities
+@inject HttpClient Http
+
+<PageTitle>Customers</PageTitle>
+
+<div class="form-group">
+    <a class="btn btn-success" href="customers/create">New Customer</a>
+</div>
+
+<Pagination TotalPages="_totalPages" CurrentPage="_currentPage" Radius="2" SelectedPage="SelectedPage"></Pagination>
+
+<GenericList Elements="people">
+    <WithElementsTemplate>
+        <table class="table">
+            <thead>
+            <tr>
+                    <th></th>
+                    <th>Id</th>
+                    <th>Company Name</th>
+                    <th>Contact Name</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Country</th>
+                    <th>PostalCode</th>
+                    <th>Region</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var customer in customers)
+            {
+                <tr>
+                    <td>
+                            <a class="btn btn-success" href="customers/edit/@customer.Id">Edit</a>
+                        <button class="btn btn-danger" @onclick="@(() => DeletePerson(customer.Id))">Delete</button>
+                    </td>
+                    <td>@customer.Id</td>
+                    <td>@customer.CompanyName</td>
+                    <td>@customer.ContactName</td>
+                    <td>@customer.Phone</td>
+                    <td>@customer.Address</td>
+                    <td>@customer.City</td>
+                    <td>@customer.Country</td>
+                    <td>@customer.PostalCode</td>
+                    <td>@customer.Region</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </WithElementsTemplate>
+</GenericList>
+            
+@code {
+    List<Customer>? customers { get; set; } = new List<Customer>();
+    private int _totalPages;
+    private int _currentPage = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomers();
+    }
+
+    private async Task SelectedPage(int page)
+    {
+        _currentPage = page;
+        await LoadCustomers(page);
+    }
+
+    async Task LoadCustomers(int page = 1, int itemsPerPage = 5)
+    {
+        var httpResponse = await Http.GetAsync($"api/customers?page={page}&itemsPerPage={itemsPerPage}");
+
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            _totalPages = int.Parse(httpResponse.Headers.GetValues("pagesQuantity").FirstOrDefault()!);
+            var responseString = await httpResponse.Content.ReadAsStringAsync();
+            customers = JsonSerializer.Deserialize<List<Customer>>(responseString, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+        }
+    }
+
+    async Task DeletePerson(Guid id)
+    {
+        await Http.DeleteAsync($"api/customers/{id}");
+        await LoadCustomers();
+    }
+}

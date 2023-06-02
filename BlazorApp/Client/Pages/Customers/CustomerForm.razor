@@ -1,0 +1,77 @@
+﻿@using BlazorApp.Shared.Entities
+<EditForm Model="@Customer" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Phone:</label>
+        <div>
+            <InputText @bind-Value="@Customer.Phone" />
+            <ValidationMessage For="@(() => Customer.Phone)" />
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Address:</label>
+        <div>
+            <InputText @bind-Value="@Customer.Address" />
+            <ValidationMessage For="@(() => Customer.Address)" />
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>City:</label>
+        <div>
+            <InputText @bind-Value="@Customer.City" />
+            <ValidationMessage For="@(() => Customer.City)" />
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>CompanyName:</label>
+        <div>
+            <InputText @bind-Value="@Customer.CompanyName" />
+            <ValidationMessage For="@(() => Customer.CompanyName)" />
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>ContactName:</label>
+        <div>
+            <InputText @bind-Value="@Customer.ContactName" />
+            <ValidationMessage For="@(() => Customer.ContactName)" />
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Country:</label>
+        <div>
+            <InputText @bind-Value="@Customer.Country" />
+            <ValidationMessage For="@(() => Customer.Country)" />
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>PostalCode:</label>
+        <div>
+            <InputText @bind-Value="@Customer.PostalCode" />
+            <ValidationMessage For="@(() => Customer.PostalCode)" />
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Region:</label>
+        <div>
+            <InputText @bind-Value="@Customer.Region" />
+            <ValidationMessage For="@(() => Customer.Region)" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Save Customer
+    </button>
+
+</EditForm>
+
+@code {
+    [Parameter] public Customer Customer { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+}
